@@ -16,6 +16,10 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
     const [rx, setRx] = useState(0);
     const [ry, setRy] = useState(0);
     const [hover, setHover] = useState(false);
+    const [touchActive, setTouchActive] = useState(false);
+
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    const maxTilt = isMobile ? 6 : 12; // Reduced tilt on mobile
 
     const formatDate = (d: string) => {
       if (!d) return "";
@@ -30,6 +34,7 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
       }
     };
 
+    // ── Mouse tilt ──
     const handleMouseMove = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         const el = e.currentTarget.getBoundingClientRect();
@@ -37,10 +42,26 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
         const cy = el.top + el.height / 2;
         const dx = (e.clientX - cx) / el.width;
         const dy = (e.clientY - cy) / el.height;
-        setRy(dx * 12);
-        setRx(-dy * 12);
+        setRy(dx * maxTilt);
+        setRx(-dy * maxTilt);
       },
-      []
+      [maxTilt]
+    );
+
+    // ── Touch tilt (iPhone Safari) ──
+    const handleTouchMove = useCallback(
+      (e: React.TouchEvent<HTMLDivElement>) => {
+        if (e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const el = e.currentTarget.getBoundingClientRect();
+        const cx = el.left + el.width / 2;
+        const cy = el.top + el.height / 2;
+        const dx = (touch.clientX - cx) / el.width;
+        const dy = (touch.clientY - cy) / el.height;
+        setRy(dx * maxTilt);
+        setRx(-dy * maxTilt);
+      },
+      [maxTilt]
     );
 
     const handleMouseEnter = useCallback(() => setHover(true), []);
@@ -50,13 +71,25 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
       setRy(0);
     }, []);
 
+    const handleTouchStart = useCallback(() => setTouchActive(true), []);
+    const handleTouchEnd = useCallback(() => {
+      setTouchActive(false);
+      setRx(0);
+      setRy(0);
+    }, []);
+
+    const activeHover = hover || touchActive;
+
     const tiltStyle = {
       transform: `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`,
-      transition: hover ? "transform 0.08s ease-out" : "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      transition: activeHover ? "transform 0.08s ease-out" : "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      WebkitTransform: `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`,
+      willChange: "transform",
     };
 
+    const baseAngle = 135 + ry * 3;
     const holoGrad = `linear-gradient(
-      ${135 + ry * 3}deg,
+      ${baseAngle}deg,
       rgba(255,255,255,0.15) 0%,
       rgba(251,191,36,0.12) 15%,
       rgba(110,231,183,0.12) 30%,
@@ -85,13 +118,17 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
           onMouseMove={handleMouseMove}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onTouchMove={handleTouchMove}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
         >
           {/* Glowing aura */}
           <div
             className="absolute -inset-4 rounded-[2rem] blur-2xl transition-all duration-500"
             style={{
               background: `radial-gradient(ellipse at ${50 + ry * 10}% ${50 - rx * 10}%, rgba(251,191,36,0.25), rgba(16,185,129,0.15), transparent 70%)`,
-              opacity: hover ? 0.8 : 0.4,
+              opacity: activeHover ? 0.8 : 0.4,
             }}
           />
 
@@ -101,29 +138,67 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
             className="relative bg-gradient-to-br from-white via-amber-50/50 to-rose-50/30 backdrop-blur-sm rounded-[2rem] p-[2px] shadow-2xl"
             style={tiltStyle}
           >
-            {/* Iridescent border glow */}
+            {/* Iridescent border glow (Safari-compatible) */}
             <div
               className="absolute inset-0 rounded-[2rem] pointer-events-none z-20"
               style={{
                 background: `linear-gradient(${135 + ry * 3}deg, rgba(251,191,36,0.4), rgba(110,231,183,0.3), rgba(56,189,248,0.3), rgba(196,181,253,0.3), rgba(251,113,133,0.3))`,
-                mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                 WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                maskComposite: "exclude",
                 WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
                 padding: "2px",
               }}
             />
 
             <div className="bg-white/95 rounded-[calc(2rem-2px)] p-6 md:p-8 overflow-hidden relative">
-              {/* Holo shimmer overlay */}
+              {/* ✨ Ambient holo shimmer (Continuous animation) */}
               <div
                 className="absolute inset-0 pointer-events-none rounded-[calc(2rem-2px)] z-10"
                 style={{ background: holoGrad }}
               />
-              {/* Holo shine sweep */}
+              {/* ✨ Holo shine sweep (Mouse-reactive) */}
               <div
                 className="absolute inset-0 pointer-events-none rounded-[calc(2rem-2px)] z-10"
                 style={{ background: holoShine }}
+              />
+              {/* ✨ Continuous shine sweep animation */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none rounded-[calc(2rem-2px)] z-10 overflow-hidden"
+              >
+                <motion.div
+                  className="absolute top-0 bottom-0 w-[30%]"
+                  style={{
+                    background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                    filter: "blur(4px)",
+                  }}
+                  animate={{
+                    left: ["-30%", "100%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    times: [0, 1],
+                  }}
+                />
+              </motion.div>
+              {/* ✨ Continuous rainbow shimmer */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none rounded-[calc(2rem-2px)] z-10"
+                style={{ opacity: 0.4, mixBlendMode: "overlay" }}
+                animate={{
+                  background: [
+                    "linear-gradient(135deg, rgba(251,191,36,0.15) 0%, rgba(110,231,183,0.15) 50%, rgba(251,113,133,0.15) 100%)",
+                    "linear-gradient(225deg, rgba(251,191,36,0.15) 0%, rgba(110,231,183,0.15) 50%, rgba(251,113,133,0.15) 100%)",
+                    "linear-gradient(315deg, rgba(251,191,36,0.15) 0%, rgba(110,231,183,0.15) 50%, rgba(251,113,133,0.15) 100%)",
+                    "linear-gradient(135deg, rgba(251,191,36,0.15) 0%, rgba(110,231,183,0.15) 50%, rgba(251,113,133,0.15) 100%)",
+                  ],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
               />
 
               {/* Decorative corners */}
@@ -312,4 +387,5 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
   }
 );
 
+VirtualTicket.displayName = "VirtualTicket";
 export default VirtualTicket;
