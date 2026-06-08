@@ -299,13 +299,15 @@ export default function Home() {
               })}
             </div>
 
-            <div className="h-1 md:h-1.5 bg-white/60 rounded-full overflow-hidden shadow-inner relative">
-              <motion.div
-                className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: `${((flowStep - 1) / (steps.length - 1)) * 100}%` }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              />
+            <div className="h-1 md:h-1.5 bg-white/60 rounded-full shadow-inner relative">
+              <div className="absolute inset-0 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full"
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${((flowStep - 1) / (steps.length - 1)) * 100}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                />
+              </div>
               <motion.div
                 className="absolute top-1/2 -translate-y-1/2 text-sm pointer-events-none"
                 initial={{ left: "0%" }}
