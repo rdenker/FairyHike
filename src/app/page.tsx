@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronRight, ChevronLeft, Send } from "lucide-react";
 import SparklesBg from "@/components/Sparkles";
 import StepParticles from "@/components/StepParticles";
 import ConfettiBurst from "@/components/ConfettiBurst";
+import ClickBurst from "@/components/ClickBurst";
 import SplashScreen from "@/components/SplashScreen";
 import NameLock from "@/components/NameLock";
 import WelcomeScreen from "@/components/WelcomeScreen";
@@ -81,6 +82,13 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const ticketRef = useRef<HTMLDivElement | null>(null);
+  const [burstKey, setBurstKey] = useState(0);
+  const [burstPos, setBurstPos] = useState({ x: 0, y: 0 });
+
+  const fireBurst = useCallback((e: React.MouseEvent) => {
+    setBurstPos({ x: e.clientX, y: e.clientY });
+    setBurstKey((k) => k + 1);
+  }, []);
 
   // Phase mapping:
   // 0 = SplashScreen
@@ -193,8 +201,7 @@ export default function Home() {
               Es ist ein Date! 🎉
             </h1>
             <p className="text-base md:text-lg text-emerald-700 mb-8 leading-relaxed max-w-md mx-auto">
-              Ich habe mich so sehr darauf gefreut und kann es kaum erwarten,
-              diesen magischen Tag mit dir zu verbringen!
+              Ich freu mich riesig auf unser kleines Abenteuer! Es wird bestimmt zauberhaft 🎉
             </p>
 
             {selectedTrail && date && time && (
@@ -250,6 +257,7 @@ export default function Home() {
     <>
       <SparklesBg />
       <StepParticles trigger={phase} />
+      {burstKey > 0 && <ClickBurst trigger={burstKey} x={burstPos.x} y={burstPos.y} />}
 
       <div className="min-h-screen py-6 md:py-8 px-4 pb-28">
         {/* Progress bar - only from trail selection onward */}
@@ -291,13 +299,27 @@ export default function Home() {
               })}
             </div>
 
-            <div className="h-1 md:h-1.5 bg-white/60 rounded-full overflow-hidden shadow-inner">
+            <div className="h-1 md:h-1.5 bg-white/60 rounded-full overflow-hidden shadow-inner relative">
               <motion.div
                 className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full"
                 initial={{ width: "0%" }}
                 animate={{ width: `${((flowStep - 1) / (steps.length - 1)) * 100}%` }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               />
+              <motion.div
+                className="absolute top-1/2 -translate-y-1/2 text-sm pointer-events-none"
+                initial={{ left: "0%" }}
+                animate={{ left: `${((flowStep - 1) / (steps.length - 1)) * 100}%` }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                style={{ marginLeft: -14 }}
+              >
+                <motion.span
+                  animate={{ y: [0, -4, 0], rotate: [0, 8, -8, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  🧚
+                </motion.span>
+              </motion.div>
             </div>
           </div>
         )}
@@ -414,12 +436,12 @@ export default function Home() {
 
                     <div className="max-w-md mx-auto mt-6 md:mt-8">
                       <label className="block text-sm font-medium text-emerald-700 mb-2 text-center">
-                        Noch eine Nachricht an mich? 💌
+                        Lust, mir noch was zu sagen? ✨
                       </label>
                       <textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Was denkst du über unser Date?..."
+                        placeholder="Was denkst du über unsere Pläne?..."
                         rows={3}
                         className="w-full px-4 py-3 rounded-2xl border border-emerald-200 bg-white/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:scale-[1.01] focus:shadow-lg focus:shadow-emerald-200/50 text-emerald-800 resize-none placeholder:text-emerald-300 text-sm transition-all duration-300"
                       />
@@ -447,7 +469,7 @@ export default function Home() {
 
             {phase < 6 ? (
               <motion.button
-                onClick={handleNext}
+                onClick={(e) => { fireBurst(e); handleNext(); }}
                 disabled={!canProceed()}
                 className={`flex items-center gap-1 md:gap-2 px-6 md:px-8 py-2.5 md:py-3 rounded-full text-sm md:text-lg font-semibold transition-all ${
                   canProceed()
@@ -462,7 +484,7 @@ export default function Home() {
               </motion.button>
             ) : (
               <motion.button
-                onClick={handleSubmit}
+                onClick={(e) => { fireBurst(e); handleSubmit(); }}
                 disabled={isSubmitting}
                 className="flex items-center gap-2 px-8 md:px-10 py-2.5 md:py-3 rounded-full text-sm md:text-lg font-semibold bg-gradient-to-r from-rose-400 via-pink-500 to-rose-500 text-white shadow-lg shadow-rose-300/30 hover:shadow-xl transition-all"
                 whileHover={{ scale: 1.05 }}

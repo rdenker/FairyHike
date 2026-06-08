@@ -132,7 +132,7 @@ export default function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             &ldquo;Falls du jemals Träume von goldenen Sonnenuntergängen,
             flüsternden Wäldern und magischen Pfaden hattest&hellip;
             <br />
-            <span className="not-italic font-normal">Ich habe einen ganz besonderen Vorschlag für dich.&rdquo;</span>
+            <span className="not-italic font-normal">Ich hab da eine Idee für ein kleines Abenteuer.&rdquo;</span>
           </p>
 
           {/* Button with fairy styling */}

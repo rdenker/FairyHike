@@ -12,13 +12,13 @@ const messages = [
   "Waldweg wird gepflastert...",
   "Glückspilze werden gesammelt...",
   "Ticket wird geschrieben...",
-  "Sonnenuntergang wird vorbereitet...",
+  "Abendstimmung wird gezaubert...",
   "Feenstaub wird verstreut...",
   "Wanderweg wird markiert...",
   "Zauber wird gewirkt...",
   "Katzen werden gekrault...",
   "Ameisenbären werden gestreichelt...",
-  "Alles wird perfekt...",
+  "Alles wird bereit gemacht...",
   "Fertig! 🎉",
 ];
 

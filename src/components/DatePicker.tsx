@@ -32,6 +32,7 @@ export default function DatePicker({
     tempMax: number;
     tempMin: number;
     sunset: string;
+    weatherCode: number;
   } | null>(null);
   const [weatherFailed, setWeatherFailed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -140,7 +141,7 @@ export default function DatePicker({
         )}
 
         {weather && !loading && (
-          <WeatherDisplay weather={weather} />
+          <WeatherDisplay weather={weather} weatherCode={weather.weatherCode} />
         )}
 
         {weatherFailed && !loading && (

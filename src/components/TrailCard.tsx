@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Trail } from "@/types";
 import { MapPin, Clock, Footprints, Sun } from "lucide-react";
 
@@ -15,6 +16,15 @@ export default function TrailCard({
   isSelected,
   onSelect,
 }: TrailCardProps) {
+  const [hoverSparkles] = useState(() =>
+    Array.from({ length: 3 }, () => ({
+      x: 15 + Math.random() * 70,
+      y: 15 + Math.random() * 60,
+      size: 8 + Math.random() * 12,
+      delay: Math.random() * 2,
+    }))
+  );
+
   return (
     <motion.div
       onClick={onSelect}
@@ -54,6 +64,20 @@ export default function TrailCard({
       >
         {/* Decorative overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+
+        {/* Hover sparkles */}
+        {hoverSparkles.map((s, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-white/50 pointer-events-none"
+            style={{ left: `${s.x}%`, top: `${s.y}%`, fontSize: s.size }}
+            initial={{ opacity: 0, scale: 0 }}
+            whileHover={{ opacity: [0, 0.7, 0], scale: [0, 1, 0] }}
+            transition={{ duration: 1.5, delay: s.delay, repeat: Infinity, ease: "easeInOut" }}
+          >
+            ✦
+          </motion.div>
+        ))}
 
         {/* Trail path SVG */}
         <div className="absolute inset-0 opacity-30">

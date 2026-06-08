@@ -11,22 +11,22 @@ const weatherCuteMap: Record<string, CuteWeather> = {
   clear: {
     emoji: "☀️",
     text: "Strahlend sonnig!",
-    verdict: "Die Sonne tanzt nur für uns! Perfekt für Feenflügel 🌟",
+    verdict: "Die Sonne lacht vom Himmel! Perfekt für Feenflügel 🌟",
   },
   mainlyClear: {
     emoji: "🌤️",
     text: "Meist sonnig",
-    verdict: "Ein Hauch von Wolken macht die Aussicht romantischer 🦋",
+    verdict: "Ein Hauch von Wolken wie Zuckerwatte – einfach schön 🦋",
   },
   partlyCloudy: {
     emoji: "⛅",
     text: "Leicht bewölkt",
-    verdict: "Wolken wie Zuckerwatte am Himmel! Immer noch zauberhaft ✨",
+    verdict: "Wolken tanzen am Himmel! Immer noch zauberhaft ✨",
   },
   overcast: {
     emoji: "☁️",
     text: "Bedeckt",
-    verdict: "Der Himmel kuschelt sich ein... aber wir auch! 🤗",
+    verdict: "Der Himmel kuschelt sich ein... Zeit für ein Waldabenteuer! 🤗",
   },
   foggy: {
     emoji: "🌫️",
@@ -36,7 +36,7 @@ const weatherCuteMap: Record<string, CuteWeather> = {
   drizzle: {
     emoji: "🌦️",
     text: "Nieselregen",
-    verdict: "Feiner Feenstaub vom Himmel! Ein bisschen Regen belebt die Seele 🌈",
+    verdict: "Feiner Feenstaub vom Himmel! Ein bisschen Regen macht den Wald noch grüner 🌈",
   },
   rain: {
     emoji: "🌧️",
@@ -46,12 +46,12 @@ const weatherCuteMap: Record<string, CuteWeather> = {
   rainHeavy: {
     emoji: "🌧️",
     text: "Starker Regen",
-    verdict: "Perfektes Wetter zum Kuscheln unter einem Baum... oder Regenschirm! ☂️",
+    verdict: "Perfektes Wetter zum Verstecken unter einem Baum... oder Regenschirm! ☂️",
   },
   snow: {
     emoji: "🌨️",
     text: "Schnee",
-    verdict: "Schneeflocken sind gefrorene Feentränen! Eine weisse Winterwunderwelt ❄️",
+    verdict: "Schneeflocken wie gefrorene Feentränen! Eine weisse Winterwunderwelt ❄️",
   },
   showers: {
     emoji: "🌦️",
@@ -96,6 +96,7 @@ export async function fetchWeather(date: string): Promise<{
   tempMax: number;
   tempMin: number;
   sunset: string;
+  weatherCode: number;
 } | null> {
   try {
     const controller = new AbortController();
@@ -127,6 +128,7 @@ export async function fetchWeather(date: string): Promise<{
       tempMax,
       tempMin,
       sunset: formatSunset(sunsetIso),
+      weatherCode,
     };
   } catch (e) {
     console.error("Weather fetch error:", e);

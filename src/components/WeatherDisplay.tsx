@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Thermometer } from "lucide-react";
+import WeatherFx from "./WeatherFx";
 
 interface WeatherDisplayProps {
   weather: {
@@ -10,9 +11,10 @@ interface WeatherDisplayProps {
     tempMin: number;
     sunset: string;
   };
+  weatherCode?: number;
 }
 
-export default function WeatherDisplay({ weather }: WeatherDisplayProps) {
+export default function WeatherDisplay({ weather, weatherCode }: WeatherDisplayProps) {
   const isRainy = ["🌧️", "🌦️", "⛈️", "🌨️"].includes(weather.weather.emoji);
 
   return (
@@ -24,12 +26,13 @@ export default function WeatherDisplay({ weather }: WeatherDisplayProps) {
       className="mt-6"
     >
       <div
-        className={`rounded-2xl p-5 border shadow-sm ${
+        className={`rounded-2xl p-5 border shadow-sm relative overflow-hidden ${
           isRainy
             ? "bg-blue-50/60 border-blue-200/50"
             : "bg-amber-50/60 border-amber-200/50"
         }`}
       >
+        {weatherCode !== undefined && <WeatherFx weatherCode={weatherCode} />}
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
           <motion.span
@@ -118,7 +121,7 @@ export default function WeatherDisplay({ weather }: WeatherDisplayProps) {
             </p>
           </div>
           <span className="ml-auto text-xs text-emerald-500 italic">
-            Perfekt für den goldenen Moment! ✨
+            Perfekt für die Gipfel-Ankunft! 🌅
           </span>
         </motion.div>
 

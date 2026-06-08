@@ -30,7 +30,7 @@ const catReactions = [
   { emoji: "😊", text: "Na klar!" },
   { emoji: "😍", text: "Oh jaa!" },
   { emoji: "🥰", text: "Ich platze fast!" },
-  { emoji: "🤩", text: "Absolute Vorfreude!" },
+  { emoji: "🤩", text: "Richtig gute Laune! 🎉" },
   { emoji: "🎉", text: "ÜBERWÄLTIGT!" },
 ];
 
@@ -67,10 +67,10 @@ export default function Moodboard({ excitement, onExcitementChange }: MoodboardP
           <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2.5, repeat: Infinity, delay: 0.3 }}>💖</motion.span>
         </div>
         <h2 className="text-3xl md:text-4xl font-display font-bold text-emerald-800 mb-2">
-          Unsere Zauberstimmung
+          Deine Zauberstimmung 🌟
         </h2>
         <p className="text-emerald-600 text-lg font-light italic">
-          Ein bisschen Inspiration für unser Abenteuer...
+          Ein bisschen Inspiration fürs Abenteuer...
         </p>
       </motion.div>
 
@@ -136,7 +136,7 @@ export default function Moodboard({ excitement, onExcitementChange }: MoodboardP
         <div className="flex flex-col items-center">
           <span className="text-3xl mb-1">🐜</span>
           <span className="text-amber-700 text-sm font-medium bg-amber-50 rounded-full px-3 py-1">
-            Ameisenbär-Liebe
+            Ameisenbär-Freunde
           </span>
         </div>
       </motion.div>
@@ -169,7 +169,7 @@ export default function Moodboard({ excitement, onExcitementChange }: MoodboardP
         className="bg-gradient-to-br from-white/80 via-rose-50/60 to-amber-50/60 backdrop-blur-md rounded-3xl p-8 border border-rose-200/50 shadow-lg max-w-lg mx-auto"
       >
         <h3 className="text-2xl font-display font-bold text-emerald-800 mb-6 text-center">
-          Wie sehr funkelt dein Herz schon? ✨
+          Wie sehr kribbelt&apos;s schon? ✨
         </h3>
 
         <div className="flex items-center gap-4 max-w-md mx-auto mb-4">
