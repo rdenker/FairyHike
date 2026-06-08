@@ -20,7 +20,7 @@ export default function WeatherDisplay({ weather }: WeatherDisplayProps) {
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ type: "spring", duration: 0.6 }}
+      transition={{ type: "spring", duration: 1 }}
       className="mt-6"
     >
       <div

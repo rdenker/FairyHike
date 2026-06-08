@@ -202,7 +202,7 @@ export default function Home() {
                 <motion.div
                   initial={{ rotateY: 90, opacity: 0, scale: 0.8 }}
                   animate={{ rotateY: 0, opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 150, damping: 18, mass: 1 }}
+                  transition={{ type: "spring", stiffness: 80, damping: 14, mass: 1.2 }}
                   style={{ perspective: "1200px" }}
                 >
                   <VirtualTicket
@@ -270,7 +270,7 @@ export default function Home() {
                         className="absolute inset-0 rounded-full ring-2 ring-amber-300"
                         initial={{ scale: 0.8, opacity: 0.6 }}
                         animate={{ scale: 1.8, opacity: 0 }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
                       />
                     )}
                     <motion.div
@@ -296,7 +296,7 @@ export default function Home() {
                 className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full"
                 initial={{ width: "0%" }}
                 animate={{ width: `${((flowStep - 1) / (steps.length - 1)) * 100}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
               />
             </div>
           </div>

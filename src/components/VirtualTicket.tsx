@@ -80,7 +80,7 @@ const VirtualTicket = forwardRef<HTMLDivElement, VirtualTicketProps>(
         <motion.div
           initial={{ opacity: 0, y: 40, rotateX: 10 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ type: "spring", duration: 0.8 }}
+          transition={{ type: "spring", duration: 1.2 }}
           className="relative max-w-sm mx-auto"
           onMouseMove={handleMouseMove}
           onMouseEnter={handleMouseEnter}

@@ -134,7 +134,7 @@ export default function TrailCard({
               key={index}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.08 }}
+              transition={{ delay: index * 0.12 }}
               className="flex items-start gap-2 text-xs text-gray-500 leading-relaxed"
             >
               <span className="text-amber-500 mt-0.5 shrink-0">

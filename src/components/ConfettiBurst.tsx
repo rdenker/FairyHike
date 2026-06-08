@@ -52,7 +52,7 @@ export default function ConfettiBurst() {
               rotate: p.rotation,
             }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 2, ease: "easeOut" }}
+            transition={{ duration: 3, ease: "easeOut" }}
           >
             {p.emoji}
           </motion.div>

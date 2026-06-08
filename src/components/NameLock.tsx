@@ -87,7 +87,7 @@ export default function NameLock({ onUnlock }: NameLockProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={shake ? { x: [-10, 10, -10, 10, 0] } : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.8 }}
         className="relative z-10 w-full max-w-sm mx-4"
       >
         <div className="bg-white/10 backdrop-blur-xl rounded-[2rem] p-8 border border-white/20 shadow-2xl">

@@ -81,8 +81,8 @@ export default function Moodboard({ excitement, onExcitementChange }: MoodboardP
             key={index}
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="relative rounded-2xl overflow-hidden aspect-square group shadow-md hover:shadow-xl transition-all"
+            transition={{ delay: index * 0.12 }}
+            className="relative rounded-2xl overflow-hidden aspect-square group shadow-md hover:shadow-xl transition-all duration-500"
           >
             {/* Decorative border */}
             <div className="absolute inset-0 border-2 border-pink-200/40 rounded-2xl z-10 pointer-events-none" />

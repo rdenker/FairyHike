@@ -45,7 +45,7 @@ export default function StepParticles({ trigger }: { trigger: number }) {
               rotate: p.rotation,
             }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 1.8, ease: "easeOut" }}
           >
             {p.emoji}
           </motion.div>
