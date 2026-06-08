@@ -12,13 +12,6 @@ interface MoodboardProps {
 
 const gifs = [
   "https://media.giphy.com/media/SggILpMXO7Xt6/giphy.gif",
-  "https://media.giphy.com/media/ODl2tCgE6MhR6/giphy.gif",
-  "https://media.giphy.com/media/ZbftHQFc3J9KM/giphy.gif",
-  "https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif",
-  "https://media.giphy.com/media/jTnGaiuxvvDNK/giphy.gif",
-  "https://media.giphy.com/media/QdkkQUoUDbivu/giphy.gif",
-  "https://media.giphy.com/media/5jRTSmhn0oFUmJksu2/giphy.gif",
-  "https://media.giphy.com/media/1BXa2alBjrCXC/giphy.gif",
 ];
 
 const anteaterImages = [
@@ -74,14 +67,14 @@ export default function Moodboard({ excitement, onExcitementChange }: MoodboardP
         </p>
       </motion.div>
 
-      {/* Moodboard Grid with fancy frames */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {gifs.slice(0, 4).map((gif, index) => (
+      {/* Cat GIF row */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
+        {gifs.slice(0, 3).map((gif, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ delay: index * 0.12 }}
+            transition={{ delay: index * 0.15 }}
             className="relative rounded-2xl overflow-hidden aspect-square group shadow-md hover:shadow-xl transition-all duration-500"
           >
             {/* Decorative border */}
@@ -99,7 +92,6 @@ export default function Moodboard({ excitement, onExcitementChange }: MoodboardP
                 <Heart className="w-8 h-8 text-pink-300 fill-pink-300" />
               </motion.div>
             </div>
-            {/* Glow on hover */}
             <div className="absolute -inset-1 bg-gradient-to-r from-pink-400/20 via-purple-400/20 to-amber-400/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.div>
         ))}

@@ -37,6 +37,26 @@ export default function DatePicker({
   const [weatherFailed, setWeatherFailed] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [altWeather, setAltWeather] = useState<{
+    weather: { emoji: string; text: string; verdict: string };
+    tempMax: number;
+    tempMin: number;
+    sunset: string;
+    weatherCode: number;
+  } | null>(null);
+  const [altWeatherFailed, setAltWeatherFailed] = useState(false);
+  const [altLoading, setAltLoading] = useState(false);
+
+  const today = new Date().toISOString().split("T")[0];
+
+  function formatWeekday(dateStr: string) {
+    try {
+      return new Date(dateStr + "T12:00:00").toLocaleDateString("de-DE", { weekday: "long" });
+    } catch {
+      return "";
+    }
+  }
+
   useEffect(() => {
     if (!date) {
       setWeather(null);
@@ -64,6 +84,34 @@ export default function DatePicker({
       cancelled = true;
     };
   }, [date]);
+
+  useEffect(() => {
+    if (!altDate) {
+      setAltWeather(null);
+      setAltWeatherFailed(false);
+      return;
+    }
+
+    let cancelled = false;
+    setAltWeather(null);
+    setAltLoading(true);
+    setAltWeatherFailed(false);
+
+    fetchWeather(altDate).then((data) => {
+      if (!cancelled) {
+        if (data) {
+          setAltWeather(data);
+        } else {
+          setAltWeatherFailed(true);
+        }
+        setAltLoading(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [altDate]);
 
   return (
     <div>
@@ -100,9 +148,13 @@ export default function DatePicker({
             <input
               type="date"
               value={date}
+              min={today}
               onChange={(e) => onDateChange(e.target.value)}
               className="w-full px-4 py-3.5 rounded-2xl border border-emerald-200/80 bg-white/80 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:scale-[1.01] focus:shadow-lg focus:shadow-emerald-200/50 text-emerald-800 transition-all duration-300"
             />
+            {date && (
+              <p className="text-xs text-emerald-500 mt-1 capitalize">{formatWeekday(date)}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-emerald-600 mb-2 flex items-center gap-2">
@@ -195,9 +247,13 @@ export default function DatePicker({
             <input
               type="date"
               value={altDate}
+              min={today}
               onChange={(e) => onAltDateChange(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl border border-amber-200/60 bg-white/60 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:scale-[1.01] focus:shadow-lg focus:shadow-amber-200/30 text-emerald-800 transition-all duration-300"
             />
+            {altDate && (
+              <p className="text-xs text-amber-500 mt-1 capitalize">{formatWeekday(altDate)}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-emerald-600 mb-2 flex items-center gap-2 opacity-70">
@@ -212,6 +268,48 @@ export default function DatePicker({
             />
           </div>
         </div>
+
+        {/* Alt weather */}
+        {altLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4 flex items-center justify-center gap-2 py-3 bg-amber-50/50 rounded-xl"
+          >
+            <motion.span
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              className="text-lg"
+            >
+              🧚
+            </motion.span>
+            <span className="text-sm text-amber-600">
+              Wetterfeen befragen...
+            </span>
+          </motion.div>
+        )}
+
+        {altWeather && !altLoading && (
+          <div className="mt-4">
+            <WeatherDisplay weather={altWeather} weatherCode={altWeather.weatherCode} />
+          </div>
+        )}
+
+        {altWeatherFailed && !altLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-amber-200/40 text-center"
+          >
+            <span className="text-3xl block mb-2">🔮</span>
+            <p className="text-sm text-emerald-700">
+              Die Wetterfeen sind noch am Zaubern...<br />
+              <span className="text-emerald-500/70">
+                Das Wetter für dieses Datum ist noch nicht vorhersagbar
+              </span>
+            </p>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );

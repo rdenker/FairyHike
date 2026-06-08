@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronRight, ChevronLeft, Send } from "lucide-react";
+import Link from "next/link";
 import SparklesBg from "@/components/Sparkles";
 import StepParticles from "@/components/StepParticles";
 import ConfettiBurst from "@/components/ConfettiBurst";
@@ -81,6 +82,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const ticketRef = useRef<HTMLDivElement | null>(null);
   const [burstKey, setBurstKey] = useState(0);
   const [burstPos, setBurstPos] = useState({ x: 0, y: 0 });
@@ -110,11 +113,18 @@ export default function Home() {
     if (phase > 2) setPhase(phase - 1);
   };
 
-  const handleSubmit = async () => {
+  const handleConfirmSubmit = () => {
+    setSubmitError(null);
+    setShowConfirm(true);
+  };
+
+  const handleDoSubmit = async () => {
     if (!selectedTrail) return;
 
+    setShowConfirm(false);
     setShowLoader(true);
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
       const res = await fetch("/api/submit", {
@@ -132,12 +142,12 @@ export default function Home() {
         }),
       });
 
-      if (res.ok) {
-        // Loading spinner will call onComplete → setIsSubmitted
-        // onComplete is handled in the LoadingSpinner
+      if (!res.ok) {
+        throw new Error(`Server antwortet: ${res.status}`);
       }
+      // Loader will call onComplete → handleLoaderComplete
     } catch (err) {
-      console.error("Failed to submit", err);
+      setSubmitError(err instanceof Error ? err.message : "Etwas ist schiefgegangen");
       setIsSubmitting(false);
       setShowLoader(false);
     }
@@ -156,7 +166,7 @@ export default function Home() {
     return true;
   };
 
-  const flowStep = phase - 2; // 0-indexed for progress bar (starts at welcome)
+  const flowStep = phase - 1; // progress bar step (starts at phase 3 which maps to step 2)
 
   // Splash screen
   if (phase === 0) {
@@ -201,7 +211,11 @@ export default function Home() {
               Es ist ein Date! 🎉
             </h1>
             <p className="text-base md:text-lg text-emerald-700 mb-8 leading-relaxed max-w-md mx-auto">
-              Ich freu mich riesig auf unser kleines Abenteuer! Es wird bestimmt zauberhaft 🎉
+              {selectedTrail && date ? (
+                <>Am {new Date(date + "T12:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })} geht&apos;s los zur <strong>{selectedTrail.name}</strong> — ich freu mich riesig! 🎉</>
+              ) : (
+                "Ich freu mich riesig auf unser kleines Abenteuer! Es wird bestimmt zauberhaft 🎉"
+              )}
             </p>
 
             {selectedTrail && date && time && (
@@ -230,7 +244,35 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5 }}
-              className="mt-8 md:mt-10 space-y-2"
+              className="mt-6 md:mt-8 space-y-2"
+            >
+              <Link
+                href="/admin"
+                className="inline-block text-emerald-500 hover:text-emerald-700 text-xs md:text-sm underline underline-offset-2 transition-colors"
+              >
+                Admin-Panel →
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2 }}
+              className="mt-4"
+            >
+              <button
+                onClick={() => { window.scrollTo({ top: 0, behavior: "instant" }); setTimeout(() => window.location.reload(), 300); }}
+                className="inline-block px-5 py-2 rounded-full bg-emerald-100 text-emerald-600 text-xs md:text-sm font-medium hover:bg-emerald-200 transition-colors"
+              >
+                Neu beginnen 🔄
+              </button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5 }}
+              className="mt-6 md:mt-8 space-y-2"
             >
               <p className="text-emerald-600 italic font-light text-sm md:text-base">
                 &ldquo;Pack schon mal deine Wanderschuhe ein...&rdquo;
@@ -436,6 +478,49 @@ export default function Home() {
                       excitement={excitement}
                     />
 
+                    {showConfirm && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+                        onClick={(e) => { if (e.target === e.currentTarget) setShowConfirm(false); }}
+                      >
+                        <motion.div
+                          initial={{ y: 30 }}
+                          animate={{ y: 0 }}
+                          className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-sm w-full text-center"
+                        >
+                          <div className="text-3xl mb-3">✨</div>
+                          <h3 className="text-xl font-display font-bold text-emerald-800 mb-2">
+                            Alles bereit?
+                          </h3>
+                          <p className="text-sm text-emerald-600 mb-1">
+                            <strong>{selectedTrail.name}</strong>
+                          </p>
+                          <p className="text-sm text-emerald-600 mb-4">
+                            {new Date(date + "T12:00:00").toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long" })} um {time} Uhr
+                          </p>
+                          <div className="flex gap-3 justify-center">
+                            <button
+                              onClick={() => setShowConfirm(false)}
+                              className="px-5 py-2.5 rounded-full border border-emerald-200 text-emerald-600 text-sm font-medium hover:bg-emerald-50 transition-colors"
+                            >
+                              Stop
+                            </button>
+                            <button
+                              onClick={handleDoSubmit}
+                              className="px-6 py-2.5 rounded-full bg-gradient-to-r from-rose-400 via-pink-500 to-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-300/30 hover:shadow-xl transition-all"
+                            >
+                              Ja, losschicken! 🚀
+                            </button>
+                          </div>
+                          {submitError && (
+                            <p className="mt-3 text-xs text-rose-500">{submitError}</p>
+                          )}
+                        </motion.div>
+                      </motion.div>
+                    )}
+
                     <div className="max-w-md mx-auto mt-6 md:mt-8">
                       <label className="block text-sm font-medium text-emerald-700 mb-2 text-center">
                         Lust, mir noch was zu sagen? ✨
@@ -445,8 +530,10 @@ export default function Home() {
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="Was denkst du über unsere Pläne?..."
                         rows={3}
+                        maxLength={300}
                         className="w-full px-4 py-3 rounded-2xl border border-emerald-200 bg-white/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:scale-[1.01] focus:shadow-lg focus:shadow-emerald-200/50 text-emerald-800 resize-none placeholder:text-emerald-300 text-sm transition-all duration-300"
                       />
+                      <p className="text-right text-xs text-emerald-400 mt-1">{notes.length}/300</p>
                     </div>
                   </div>
                 )
@@ -485,8 +572,9 @@ export default function Home() {
                 <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </motion.button>
             ) : (
+              <>
               <motion.button
-                onClick={(e) => { fireBurst(e); handleSubmit(); }}
+                onClick={(e) => { fireBurst(e); handleConfirmSubmit(); }}
                 disabled={isSubmitting}
                 className="flex items-center gap-2 px-8 md:px-10 py-2.5 md:py-3 rounded-full text-sm md:text-lg font-semibold bg-gradient-to-r from-rose-400 via-pink-500 to-rose-500 text-white shadow-lg shadow-rose-300/30 hover:shadow-xl transition-all"
                 whileHover={{ scale: 1.05 }}
@@ -496,7 +584,7 @@ export default function Home() {
                   "Wird gesendet..."
                 ) : (
                   <>
-                    Abschicken
+                    {selectedTrail ? `${selectedTrail.name} 🚀` : "Abschicken"}
                     <Send className="w-4 h-4 md:w-5 md:h-5" />
                     <motion.span
                       animate={{ scale: [1, 1.3, 1] }}
@@ -507,6 +595,10 @@ export default function Home() {
                   </>
                 )}
               </motion.button>
+              {submitError && !showConfirm && (
+                <p className="text-xs text-rose-500 mt-2 text-center">{submitError}</p>
+              )}
+              </>
             )}
           </div>
         </div>
