@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import CursorTrail from "@/components/CursorTrail";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
       >
         {children}
         <CursorTrail />
+        <SpeedInsights />
       </body>
     </html>
   );
